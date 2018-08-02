@@ -1,14 +1,24 @@
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
-import pickle 
+import pickle
+import os
 
+
+def get_urls(url,num_pages=3):
+	
+	urls = []
+	start,end = url.split('Reviews-')
+	urls.append(start+end)
+	num = 10
+	for page in range(num_pages-1):
+		urls.append(start+'or'+str(num)+'-'+end)
+		num+=10
+
+	print(urls)
+	return urls
 
 def get_page(url):
-	# page = requests.get(url)
-	# file = open('data/univ_studios.pkl','wb')
-	# pickle.dump(page,file)
-
 	file = open('data/univ_studios.pkl','rb')
 	page = pickle.load(file)
 	return page
@@ -59,16 +69,39 @@ def display_review(parsed_review):
 	print('Rating\t:\t',parsed_review['rating'])
 	print('________________________________________________\n')
 
+
+def append_review(review,title):
+	
+	filename = 'data/'+title+'.csv'
+
+	review_df = pd.DataFrame()
+	review_df.set_value(0,'Review Title',review['review_title'])
+	review_df.set_value(0,'Review Text',review['review_text'])
+	review_df.set_value(0,'Username',review['username'])
+	review_df.set_value(0,'Location',review['location'])
+	review_df.set_value(0,'Rating',review['rating'])
+
+	if not os.path.isfile(filename):
+		df = review_df
+		df.to_csv(filename,index=False)
+	else:
+		df = pd.read_csv(filename)
+		df = df.append(review_df)
+		df.to_csv(filename,index=False)
+
 def parse_page(page):
 	soup = BeautifulSoup(page.text,'html.parser')
+	title = get_by_class_name(soup,'heading_title',tag='h1',mode='one').text
 	reviews = get_by_class_name(soup,'review-container')
 	for review in reviews:
 		parsed_review = parse_review(review)
 		display_review(parsed_review)
-
+		append_review(parsed_review,title)
 
 if __name__ == '__main__':
-	url = 'https://www.tripadvisor.com.sg/Attraction_Review-g294264-d2439664-Reviews-Universal_Studios_Singapore-Sentosa_Island.html'
-	page = get_page(url)
-	# print(page.status_code)
-	parse_page(page)
+	base_url = 'https://www.tripadvisor.com.sg/Attraction_Review-g294264-d2439664-Reviews-Universal_Studios_Singapore-Sentosa_Island.html'
+	urls = get_urls(base_url,num_pages=3)
+
+	for url in urls:
+		page = get_page(url)
+		parse_page(page)
