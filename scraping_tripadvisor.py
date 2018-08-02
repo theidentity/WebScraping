@@ -19,8 +19,8 @@ def get_urls(url,num_pages=3):
 	return urls
 
 def get_page(url):
-	file = open('data/univ_studios.pkl','rb')
-	page = pickle.load(file)
+
+	page = requests.get(url)	
 	return page
 
 def get_by_class_name(soup,class_name,tag='div',mode='all'):
@@ -29,7 +29,6 @@ def get_by_class_name(soup,class_name,tag='div',mode='all'):
 	elif mode=='one':
 		items = soup.find(tag,{'class':class_name})
 	return items
-
 
 def parse_review_components(soup,class_name,tag='div',mode='text'):
 	if mode=='text':
@@ -100,7 +99,7 @@ def parse_page(page):
 
 if __name__ == '__main__':
 	base_url = 'https://www.tripadvisor.com.sg/Attraction_Review-g294264-d2439664-Reviews-Universal_Studios_Singapore-Sentosa_Island.html'
-	urls = get_urls(base_url,num_pages=3)
+	urls = get_urls(base_url,num_pages=2)
 
 	for url in urls:
 		page = get_page(url)
