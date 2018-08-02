@@ -1,0 +1,10 @@
+The following data is what I would like you to scrape to :
+ 
+Review Title: Lost for Words
+Review Text: Amazing place to be. Go for the 2 day fun play pass according to what all you want visit in Sentosa. But my suggestion if you are going on a Friday Saturday Sunday or a public holiday make sure to take the express pass. Head.
+Username: Divit B
+Location: Mumbai, India
+Rating: 5 stars
+ 
+You will need to write python code to scrape the data for 2 pages of reviews –i.e. 20 reviews in total and to output the data as given above.
+ 
